@@ -4,11 +4,23 @@ const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = {
-  mode: 'production',
-  devtool: 'source-map',
+  mode: 'development',
+  devtool: 'inline-source-map',
   entry: [
-    './lib/index.js'
+    './lib/index.tsx'
   ],
+  module: {
+    rules: [
+      {
+        test: /\.tsx?$/,
+        use: 'ts-loader',
+        exclude: /node_modules/
+      }
+    ]
+  },
+  resolve: {
+    extensions: ['.tsx', '.ts', '.js']
+  },
   plugins: [
     new HtmlWebpackPlugin({
       title: 'IPFS Videostream example',
