@@ -85,11 +85,11 @@ function* subscribeToChannel(ipfs, channelName) {
     const messageListener = (event) => {
       try {
         const text = JSON.parse(event.data.toString())
-        const value = {
+        const value = recieveMessage({
           id: event.seqno.toString('HEX'),
           text,
           from: event.from
-        }
+        })
         emit({ value })
 
       } catch (error) {
@@ -98,7 +98,13 @@ function* subscribeToChannel(ipfs, channelName) {
       }
     }
     ipfs.pubsub.subscribe(channelName, messageListener, (error) => {
-      emit({ error })
+      if (error) {
+        emit({ error })
+      } else {
+        emit({ value: { type: 'CHANNEL_JOINED', payload: { channelName } } })
+        const value = sendMessage('Never fear, I is here')
+        emit({ value })
+      }
     })
 
     return () => {
@@ -115,7 +121,7 @@ function* subscribeToChannel(ipfs, channelName) {
       return
     }
     if (value) {
-      yield put(recieveMessage(value))
+      yield put(value)
     }
   }
 }
@@ -123,6 +129,7 @@ function* subscribeToChannel(ipfs, channelName) {
 function* sendToChannel(channel, ipfs, event) {
   const data = ipfs.types.Buffer.from(JSON.stringify(event.payload.message))
   yield ipfs.pubsub.publish(channel, data)
+  yield put({ type: 'MESSAGE_SENT', payload: event.payload })
 }
 
 function* channelManagement(ipfs) {
@@ -141,8 +148,8 @@ function* channelManagement(ipfs) {
       }
       currentChannel = channel
       if (channel) {
-        subscription = yield fork(subscribeToChannel, ipfs, channel)
         sendingThread = yield takeEvery('MESSAGE_SEND', sendToChannel, currentChannel, ipfs)
+        subscription = yield fork(subscribeToChannel, ipfs, channel)
       }
     }
   }

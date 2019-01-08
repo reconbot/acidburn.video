@@ -8,7 +8,7 @@ class MessageList extends Component {
     const { messages } = this.props
     console.log({ messages })
     return (<div>
-      {messages.map(message => <div key={message.id}>{message.text}</div>)}
+      {messages.map(message => <div key={message.id}>{message.from.slice(-4)} - {message.text}</div>)}
     </div>)
   }
 

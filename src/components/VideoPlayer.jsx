@@ -33,7 +33,7 @@ class VideoElement extends Component {
     this.videoElement = React.createRef();
   }
 
-  componentDidMount() {
+  streamVideo() {
     const { ipfs, hash, emitError } = this.props
     const file = {
       createReadStream: (opts) => {
@@ -65,6 +65,13 @@ class VideoElement extends Component {
       }
     }
     new VideoStream(file, this.videoElement.current)
+  }
+
+  componentDidMount() {
+    this.streamVideo()
+  }
+  componentDidUpdate() {
+    this.streamVideo()
   }
   componentWillUnmount() {
     if (this.stream && this.stream.destroy) {
