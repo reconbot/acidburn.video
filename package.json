@@ -1,44 +1,36 @@
 {
-  "name": "acidburn.video",
-  "version": "1.0.0",
-  "description": "Watch videos with others",
-  "scripts": {
-    "start": "webpack-dev-server",
-    "build": "webpack",
-    "lint": "tslint -c tslint.json -p tsconfig.json lib/**/*.ts*",
-    "test": "tape -r ts-node/register lib/**/*-test.ts"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/reconbot/acidburn.video.git"
-  },
-  "author": "Francis Gulotta <wizard@roborooter.com>",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/reconbot/acidburn.video/issues"
-  },
-  "homepage": "https://github.com/reconbot/acidburn.video#readme",
+  "name": "acidburn.video2",
+  "version": "0.1.0",
+  "private": true,
   "dependencies": {
-    "ipfs": "^0.33.1",
-    "prop-types": "^15.6.2",
+    "@types/jest": "23.3.12",
+    "@types/node": "10.12.18",
+    "@types/react": "16.7.18",
+    "@types/react-dom": "16.0.11",
+    "ipfs": "0.34.0-rc.0",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
+    "react-file-drop": "^0.2.7",
+    "react-redux": "^6.0.0",
+    "react-scripts": "2.1.3",
     "redux": "^4.0.1",
     "redux-saga": "^0.16.2",
+    "typescript": "3.2.2",
     "videostream": "^3.2.0"
   },
-  "devDependencies": {
-    "@types/react": "^16.7.18",
-    "@types/react-dom": "^16.0.11",
-    "@types/tape": "^4.2.33",
-    "html-webpack-plugin": "^3.2.0",
-    "tape": "^4.9.2",
-    "ts-loader": "^5.3.3",
-    "ts-node": "^7.0.1",
-    "tslint": "^5.12.0",
-    "typescript": "^3.2.2",
-    "webpack": "^4.28.2",
-    "webpack-cli": "^3.1.2",
-    "webpack-dev-server": "^3.1.14"
-  }
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
 }
