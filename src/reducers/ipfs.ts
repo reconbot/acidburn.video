@@ -2,7 +2,7 @@ import { Action } from "redux";
 import IPFS from 'ipfs'
 
 function makeIPFS() {
-  return new IPFS({
+  const ipfs = new IPFS({
     relay: {
       enabled: true,
       hop: {
@@ -21,6 +21,12 @@ function makeIPFS() {
       dht: false // crashes when turned on
     }
   })
+  const emit = ipfs.emit
+  ipfs.emit = function () {
+    console.log({ emit: arguments })
+    return emit.apply(ipfs, arguments)
+  }
+  return ipfs
 }
 
 export interface StandardAction extends Action {
