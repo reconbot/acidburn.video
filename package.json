@@ -7,7 +7,7 @@
     "@types/node": "10.12.18",
     "@types/react": "16.7.18",
     "@types/react-dom": "16.0.11",
-    "ipfs": "0.34.0-rc.0",
+    "ipfs": "^0.34.4",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
     "react-file-drop": "^0.2.7",
