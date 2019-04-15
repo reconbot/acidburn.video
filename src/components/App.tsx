@@ -1,20 +1,21 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React from 'react'
 import { VideoPlayer } from './VideoPlayer'
 import { Chat } from './Chat'
-import './App.css';
+import { IPFSProvider } from './IPFSProvider'
+import { RouterProvider } from './Router'
+import './App.css'
 
-class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <VideoPlayer />
-        <Chat />
-      </div>
-    );
-  }
+export function App() {
+  return (
+    <div className="App">
+      <IPFSProvider>
+        <RouterProvider>
+          <VideoPlayer />
+          <Chat />
+        </RouterProvider>
+      </IPFSProvider>
+    </div>
+  );
 }
 
-const connectedApp = connect()(App)
-
-export { connectedApp as App }
+(window as any).hackers = () => document.location.hash = '#QmZj2Zz2SsuVgWDqCsfCskUk5GeQdE8MtQEFd6twX1gmGB'
