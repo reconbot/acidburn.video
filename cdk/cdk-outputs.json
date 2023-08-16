@@ -1,0 +1,7 @@
+{
+  "telley-live2-ws-production": {
+    "websocketUrl": "wss://ws-2.telley.live/",
+    "callbackUrl": "https://4aoozm3r1e.execute-api.us-west-2.amazonaws.com/$default",
+    "region": "us-west-2"
+  }
+}
