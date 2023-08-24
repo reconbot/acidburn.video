@@ -9,6 +9,7 @@ import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs"
 import { RetentionDays } from "aws-cdk-lib/aws-logs"
 import { Runtime } from "aws-cdk-lib/aws-lambda"
 import { WebSocketLambdaIntegration } from "@aws-cdk/aws-apigatewayv2-integrations-alpha"
+import { Table } from "aws-cdk-lib/aws-dynamodb"
 
 export class WebSocket extends Construct {
   stage: WebSocketStage
@@ -16,10 +17,12 @@ export class WebSocket extends Construct {
   constructor(scope: Construct, id: string, {
     targetUrl,
     jwtSecret,
+    connectionsTable,
     domain,
   }: {
     targetUrl: string
     jwtSecret: string
+    connectionsTable: Table
     domain?: string
   }) {
     super(scope, id)
@@ -32,6 +35,7 @@ export class WebSocket extends Construct {
       environment: {
         TARGET_URL: targetUrl,
         JWT_SECRET: jwtSecret,
+        DDB_CONNECTIONS_TABLE: connectionsTable.tableName,
       },
       logRetention: RetentionDays.THREE_MONTHS,
     })

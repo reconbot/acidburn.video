@@ -1,7 +1,6 @@
 export interface Connection {
   connectionId: string
-  channelId: string
-  senderId: string
+  channel: string
   ttl: number
 }
 

@@ -7,6 +7,7 @@ import { RetentionDays } from "aws-cdk-lib/aws-logs"
 import { Runtime } from "aws-cdk-lib/aws-lambda"
 import { HttpLambdaIntegration } from "@aws-cdk/aws-apigatewayv2-integrations-alpha"
 import { WebSocket } from "./WebSocket"
+import { Table } from "aws-cdk-lib/aws-dynamodb"
 
 export class ControlApi extends Construct {
   url: string
@@ -14,9 +15,11 @@ export class ControlApi extends Construct {
   constructor(scope: Construct, id: string, {
     webSocket,
     jwtSecret,
+    connectionsTable,
   }: {
     webSocket: WebSocket
     jwtSecret: string
+    connectionsTable: Table
   }) {
     super(scope, id)
 
@@ -28,6 +31,7 @@ export class ControlApi extends Construct {
       environment: {
         CALLBACK_URL: webSocket.stage.callbackUrl,
         JWT_SECRET: jwtSecret,
+        DDB_CONNECTIONS_TABLE: connectionsTable.tableName,
       },
       logRetention: RetentionDays.THREE_MONTHS,
     })

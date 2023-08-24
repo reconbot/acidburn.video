@@ -2,6 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { WebSocket } from '../resources/WebSocket';
 import { ControlApi } from '../resources/ControlApi';
+import { DDB } from '../resources/DDB';
 
 export class WebsocketCallback extends cdk.Stack {
   constructor(scope: Construct, id: string, props: cdk.StackProps & {
@@ -13,15 +14,19 @@ export class WebsocketCallback extends cdk.Stack {
 
     const { domain, targetUrl, jwtSecret } = props
 
+    const ddb = new DDB(this, 'ddb')
+
     const webSocket = new WebSocket(this, 'websocket', {
       domain,
       targetUrl,
       jwtSecret,
+      connectionsTable: ddb.connections,
     })
 
     const controlApi = new ControlApi(this, 'controller', {
       webSocket,
       jwtSecret,
+      connectionsTable: ddb.connections,
     })
 
     new cdk.CfnOutput(this, 'region', {

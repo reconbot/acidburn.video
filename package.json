@@ -11,6 +11,7 @@
     "deploy:staging": "cdk deploy '*staging' --outputs-file ./cdk-outputs.json"
   },
   "dependencies": {
+    "@aws-sdk/client-apigatewaymanagementapi": "^3.398.0",
     "@types/node": "20.4.9",
     "@types/react": "18.2.20",
     "@types/react-dom": "18.2.7",

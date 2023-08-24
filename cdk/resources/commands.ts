@@ -1,5 +1,7 @@
+import { collect, consume, pipeline, transform } from "streaming-iterables";
 import { ControlPlaneEvent, FromBackend, FromWebSocketServer } from "../../lib/types";
 import { assertUnreachable } from "../../lib/utils";
+import { DDBClient } from "./DDBClient";
 import { WebSocketClient, ignoreDisconnected } from "./WebSocketClient";
 
 export function parseControlPlaneCommands(body: string | undefined): ControlPlaneEvent[] | null {
@@ -110,20 +112,29 @@ export function parseWebSocketEvents(body: string | undefined): FromWebSocketSer
   return data as FromWebSocketServer[];
 }
 
-export const processCommand = async (wsClient: WebSocketClient, command: ControlPlaneEvent) => {
+export const processCommand = async ({ ddbClient, wsClient, command }: { ddbClient: DDBClient, wsClient: WebSocketClient; command: ControlPlaneEvent; }) => {
   const { target, event } = command
   if (event.type === 'TEXT') {
-    await wsClient.send(target, event.data).catch(ignoreDisconnected)
+    await pipeline(
+      () => ddbClient.itrConnectionsByChannelId(target),
+      transform(10, connection => wsClient.send(connection.connectionId, event.data).catch(ignoreDisconnected)),
+      consume
+    )
     return
   }
   if (event.type === 'DISCONNECT') {
-    await wsClient.disconnect(target).catch(ignoreDisconnected)
+    await Promise.all([
+      wsClient.disconnect(target).catch(ignoreDisconnected),
+      ddbClient.disconnect(target)
+    ])
     return
   }
   if (event.type === 'SUBSCRIBE') {
+    await ddbClient.subscribe({ connectionId: target, channel: event.target })
     return
   }
   if (event.type === 'UNSUBSCRIBE') {
+    await ddbClient.unsubscribe({ connectionId: target, channel: event.target })
     return
   }
   assertUnreachable(event)

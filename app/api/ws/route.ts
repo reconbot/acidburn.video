@@ -81,9 +81,9 @@ class WSConnection {
     this.closed = true
   }
 
-  send(message: string) {
-    this.outEvents.push({ type: "TEXT", data: message })
-  }
+  // send(message: string) {
+  //   this.outEvents.push({ type: "TEXT", data: message })
+  // }
 
   subscribe(channel: string) {
     this.outEvents.push({ type: "SUBSCRIBE", target: channel })
@@ -119,8 +119,7 @@ export async function POST(request: NextRequest) {
     })
   }
 
-  if (context.isOpening()) {
-  }
+  console.log({ connectionId: context.connectionId, events: context.inEvents })
 
   for (const event of context.inEvents) {
     if (event.type === 'OPEN') {
@@ -133,7 +132,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (event.type === 'TEXT') {
-      console.log(event)
+      await wsPublisher.publish('idk', 'I love data')
       continue
     }
 

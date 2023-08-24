@@ -12,16 +12,16 @@ export class DDB extends Construct {
         type: AttributeType.STRING,
       },
       sortKey: {
-        name: 'channelId',
+        name: 'channel',
         type: AttributeType.STRING,
       },
       timeToLiveAttribute: 'ttl',
     })
 
     this.connections.addGlobalSecondaryIndex({
-      indexName: 'byChannelId',
+      indexName: 'byChannel',
       partitionKey: {
-        name: 'channelId',
+        name: 'channel',
         type: AttributeType.STRING,
       },
     })
