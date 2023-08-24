@@ -1,7 +1,7 @@
 import { JWT } from "@/lib/JWT"
 import { ControlPlaneEvent, FromBackend, FromWebSocketServer } from "@/lib/types"
 import { NextRequest } from "next/server"
-import { parseWebSocketEvents } from '@/cdk/resources/commands'
+import { parseWebSocketEvents } from '@/lib/parseWebSocketEvents'
 import { assertUnreachable } from "@/lib/utils"
 
 const JWT_SECRET = process.env.JWT_SECRET
@@ -24,14 +24,17 @@ class WSPublisher {
 
   async parseRequest(request: NextRequest): Promise<WSConnection | null> {
     if (!jwt.verifyAuthTokenFromHeader(request.headers.get('authorization'), 'WebSocketEvent')) {
+      console.log('bad token')
       return null
     }
     const connectionId = request.headers.get('x-connection-id')
     if (!connectionId) {
+      console.log('no connection id')
       return null
     }
     const events = parseWebSocketEvents(await request.text())
     if (!events) {
+      console.log('cannot parse events')
       return null
     }
     return new WSConnection(connectionId, events)

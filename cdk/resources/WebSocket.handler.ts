@@ -63,7 +63,7 @@ export const handler: APIGatewayProxyWebsocketHandlerV2 = async (event) => {
   const [response, _] = await Promise.all([
     fetch(TARGET_URL, {
       method: 'POST',
-      body: JSON.stringify(wsEvent),
+      body: JSON.stringify([wsEvent]),
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/websocket-events',

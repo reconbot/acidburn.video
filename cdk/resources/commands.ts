@@ -1,5 +1,5 @@
 import { collect, consume, pipeline, transform } from "streaming-iterables";
-import { ControlPlaneEvent, FromBackend, FromWebSocketServer } from "../../lib/types";
+import { ControlPlaneEvent, FromBackend } from "../../lib/types";
 import { assertUnreachable } from "../../lib/utils";
 import { DDBClient } from "./DDBClient";
 import { WebSocketClient, ignoreDisconnected } from "./WebSocketClient";
@@ -76,40 +76,6 @@ export function parseBackendEvents(body: string | undefined): FromBackend[] | nu
   }
 
   return data as FromBackend[];
-}
-
-export function parseWebSocketEvents(body: string | undefined): FromWebSocketServer[] | null {
-  if (!body) {
-    return null;
-  }
-  let data;
-  try {
-    data = JSON.parse(body);
-  } catch (error) {
-    return null;
-  }
-  if (!Array.isArray(data)) {
-    return null;
-  }
-
-  for (const event of data as FromBackend[]) {
-    if (event.type === 'TEXT' && typeof event.data === 'string') {
-      continue;
-    }
-    if (event.type === 'DISCONNECT') {
-      continue;
-    }
-    if (event.type === 'SUBSCRIBE' && event.target) {
-      continue;
-    }
-    if (event.type === 'UNSUBSCRIBE' && event.target) {
-      continue;
-    }
-
-    return null;
-  }
-
-  return data as FromWebSocketServer[];
 }
 
 export const processCommand = async ({ ddbClient, wsClient, command }: { ddbClient: DDBClient, wsClient: WebSocketClient; command: ControlPlaneEvent; }) => {
