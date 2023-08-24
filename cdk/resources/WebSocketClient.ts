@@ -7,10 +7,10 @@ export class WebSocketClient {
     this.client = new ApiGatewayManagementApiClient({ endpoint: callbackUrl })
   }
 
-  async send(connectionId: string, data: Record<string, any>) {
+  async send(connectionId: string, data: string) {
     const command = new PostToConnectionCommand({
       ConnectionId: connectionId,
-      Data: JSON.stringify(data),
+      Data: data,
     })
 
     await this.client.send(command)

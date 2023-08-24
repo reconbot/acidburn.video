@@ -75,6 +75,8 @@ export class WebSocket extends Construct {
         }
       },
     })
+
+    eventHandler.addEnvironment('CALLBACK_URL', this.stage.callbackUrl)
   }
 }
 

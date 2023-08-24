@@ -10,11 +10,11 @@ interface JWTToken {
   iss: typeof issuer
 }
 
-export interface WebSocketEvent extends JWTToken {
+export interface WebSocketEventJWT extends JWTToken {
   aud: 'WebSocketEvent'
 }
 
-export interface ControlEvent extends JWTToken {
+export interface ControlEventJWT extends JWTToken {
   aud: 'ControlEvent'
 }
 
@@ -27,7 +27,7 @@ export class JWT {
     this.jwtSecret = jwtSecret
   }
 
-  verifyToken<R extends WebSocketEvent | ControlEvent>(token: string, audience: R['aud']) {
+  verifyToken<R extends WebSocketEventJWT | ControlEventJWT>(token: string, audience: R['aud']) {
     if (!token) {
       throw new Error('"token" is required')
     }
@@ -42,7 +42,7 @@ export class JWT {
     }) as R
   }
 
-  generateToken<R extends WebSocketEvent | ControlEvent>({
+  generateToken<R extends WebSocketEventJWT | ControlEventJWT>({
     audience,
     data,
     expiresIn,
@@ -67,7 +67,7 @@ export class JWT {
     })
   }
 
-  verifyAuthTokenFromHeader<R extends WebSocketEvent | ControlEvent>(auth: string | undefined | null, audience: R['aud']) {
+  verifyAuthTokenFromHeader<R extends WebSocketEventJWT | ControlEventJWT>(auth: string | undefined | null, audience: R['aud']) {
     if (!auth) {
       return false
     }

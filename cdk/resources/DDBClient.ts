@@ -1,7 +1,7 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb"
 import { DynamoDBDocument, QueryCommandInput } from "@aws-sdk/lib-dynamodb"
 import { nanoid } from 'nanoid'
-import { Connection } from "./types"
+import { Connection } from "../../lib/types"
 import { collect, take } from "streaming-iterables"
 
 export class DDBClient {
