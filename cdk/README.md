@@ -31,11 +31,11 @@ Due to API gateway limitations connections we can't send protocol level ping eve
 This will create a DDB table called `Connections`
 
 - partitionKey: connectionId
-- sortKey: channelId
+- sortKey: channel
 
 It also has a GSI for fetching connections in a channel
 
-- partitionKey: channelId
+- partitionKey: channel
 
 ## Todo
 

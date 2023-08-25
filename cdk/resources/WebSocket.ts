@@ -40,6 +40,8 @@ export class WebSocket extends Construct {
       logRetention: RetentionDays.THREE_MONTHS,
     })
 
+    connectionsTable.grantReadWriteData(eventHandler)
+
     let dn
     if (domain) {
       const hostedZone = HostedZone.fromLookup(this, 'hostedZone', {
@@ -80,6 +82,7 @@ export class WebSocket extends Construct {
       },
     })
 
+    this.stage.grantManagementApiAccess(eventHandler)
     eventHandler.addEnvironment('CALLBACK_URL', this.stage.callbackUrl)
   }
 }

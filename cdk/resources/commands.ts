@@ -12,6 +12,7 @@ export function parseControlPlaneCommands(body: string | undefined): ControlPlan
   try {
     data = JSON.parse(body);
   } catch (error) {
+    console.error({ error, body })
     return null;
   }
   if (!Array.isArray(data)) {
@@ -19,23 +20,32 @@ export function parseControlPlaneCommands(body: string | undefined): ControlPlan
   }
 
   for (const command of data as ControlPlaneEvent[]) {
-    const { target, event } = command;
+    const { target, event } = command
     if (!target) {
-      return null;
+      return null
     }
-    if (event.type === 'TEXT' && typeof event.data === 'string') {
-      continue;
+    if (event.type === 'TEXT') {
+      if (typeof event.data !== 'string') {
+        return null
+      }
+      continue
     }
     if (event.type === 'DISCONNECT') {
-      continue;
+      continue
     }
-    if (event.type === 'SUBSCRIBE' && event.target) {
-      continue;
+    if (event.type === 'SUBSCRIBE') {
+      if (!event.target) {
+        return null
+      }
+      continue
     }
-    if (event.type === 'UNSUBSCRIBE' && event.target) {
-      continue;
+    if (event.type === 'UNSUBSCRIBE') {
+      if (!event.target) {
+        return null
+      }
+      continue
     }
-    return null;
+    assertUnreachable(event)
   }
 
   return data as ControlPlaneEvent[];
@@ -57,22 +67,30 @@ export function parseBackendEvents(body: string | undefined): FromBackend[] | nu
 
   for (const event of data as FromBackend[]) {
     if (event.type === 'ACCEPT') {
-      continue;
+      continue
     }
-    if (event.type === 'TEXT' && typeof event.data === 'string') {
-      continue;
+    if (event.type === 'TEXT') {
+      if (typeof event.data !== 'string') {
+        return null
+      }
+      continue
     }
     if (event.type === 'DISCONNECT') {
-      continue;
+      continue
     }
-    if (event.type === 'SUBSCRIBE' && event.target) {
-      continue;
+    if (event.type === 'SUBSCRIBE') {
+      if (!event.target) {
+        return null
+      }
+      continue
     }
-    if (event.type === 'UNSUBSCRIBE' && event.target) {
-      continue;
+    if (event.type === 'UNSUBSCRIBE') {
+      if (!event.target) {
+        return null
+      }
+      continue
     }
-
-    return null;
+    assertUnreachable(event)
   }
 
   return data as FromBackend[];
@@ -82,7 +100,7 @@ export const processCommand = async ({ ddbClient, wsClient, command }: { ddbClie
   const { target, event } = command
   if (event.type === 'TEXT') {
     await pipeline(
-      () => ddbClient.itrConnectionsByChannelId(target),
+      () => ddbClient.itrConnectionsByChannel(target),
       transform(10, connection => wsClient.send(connection.connectionId, event.data).catch(ignoreDisconnected)),
       consume
     )

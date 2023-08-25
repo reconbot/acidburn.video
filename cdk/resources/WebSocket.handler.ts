@@ -60,19 +60,15 @@ export const handler: APIGatewayProxyWebsocketHandlerV2 = async (event) => {
   const wsEvent = buildEvent(event)
   console.log(JSON.stringify(event))
   console.log(JSON.stringify(wsEvent))
-  const [response, _] = await Promise.all([
-    fetch(TARGET_URL, {
-      method: 'POST',
-      body: JSON.stringify([wsEvent]),
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/websocket-events',
-        'x-connection-id': connectionId,
-      }
-    }),
-    ddbClient.disconnect(connectionId)
-])
-
+  const response = await fetch(TARGET_URL, {
+    method: 'POST',
+    body: JSON.stringify([wsEvent]),
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/websocket-events',
+      'x-connection-id': connectionId,
+    }
+  })
   if (!response.ok) {
     console.error({ message: `Bad response from TARGET_URL`, statusCode: response.status, statusText: response.statusText, body: await response.text()})
     return {

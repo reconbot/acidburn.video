@@ -1,4 +1,4 @@
-import { APIGatewayProxyHandlerV2 } from "aws-lambda"
+import { APIGatewayProxyEventV2, APIGatewayProxyHandlerV2 } from "aws-lambda"
 import { WebSocketClient } from "./WebSocketClient"
 import { parseControlPlaneCommands, processCommand } from "./commands"
 import { JWT } from "../../lib/JWT"
@@ -23,6 +23,14 @@ const jwt = new JWT({ jwtSecret: JWT_SECRET })
 const wsClient = new WebSocketClient(CALLBACK_URL)
 const ddbClient = new DDBClient(DDB_CONNECTIONS_TABLE)
 
+const parseBody = (event: APIGatewayProxyEventV2): string | undefined => {
+  const { body, isBase64Encoded } = event
+  if (isBase64Encoded && body !== undefined) {
+    return atob(body)
+  }
+  return body
+}
+
 export const handler: APIGatewayProxyHandlerV2 = async (event) => {
   if (!jwt.verifyAuthTokenFromHeader(event.headers.authorization || event.headers.Authorization, 'ControlEvent')) {
     return {
@@ -30,10 +38,10 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
       body: 'Invalid token',
     }
   }
-  const { body } = event
+  const body = parseBody(event)
   const commands = parseControlPlaneCommands(body)
-  console.log({ commands })
   if (!commands) {
+    console.error({ body, commands })
     return {
       statusCode: 400,
       body: `{"message": "invalid commands"}`
@@ -45,7 +53,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
   }
 
   return {
-    statusCode: 500,
-    body: `{"message": "unknown command"}`
+    statusCode: 200,
+    body: `{"message": "processed successfully"}`
   }
 }

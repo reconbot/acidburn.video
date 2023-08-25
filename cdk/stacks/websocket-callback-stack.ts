@@ -36,9 +36,9 @@ export class WebsocketCallback extends cdk.Stack {
       value: domain ? `wss://${domain}/` : webSocket.stage.url,
       description: 'Websocket URL',
     })
-    new cdk.CfnOutput(this, 'callbackUrl', {
+    new cdk.CfnOutput(this, 'controlApi', {
       value: controlApi.url,
-      description: 'External Websocket callback URL',
+      description: 'Websocket Controller API Url',
     })
     new cdk.CfnOutput(this, 'targetUrl', {
       value: targetUrl,

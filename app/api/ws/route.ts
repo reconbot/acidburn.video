@@ -9,16 +9,16 @@ if (!JWT_SECRET) {
   throw new Error('JWT_SECRET is undefined')
 }
 
-const { 'telley-live2-ws-production': { callbackUrl } } = require('../../../cdk/cdk-outputs.json')
+const { 'acidburn-video-production': { controlApi } } = require('../../../cdk/cdk-outputs.json')
 
 const jwt = new JWT({ jwtSecret: JWT_SECRET })
 
 class WSPublisher {
-  callbackUrl: string
+  controlApi: string
   jwt: JWT
 
-  constructor({ callbackUrl, jwt }: {callbackUrl: string, jwt: JWT }) {
-    this.callbackUrl = callbackUrl
+  constructor({ controlApi, jwt }: {controlApi: string, jwt: JWT }) {
+    this.controlApi = controlApi
     this.jwt = jwt
   }
 
@@ -43,7 +43,8 @@ class WSPublisher {
   async publish(target: string, data: string) {
     const event: ControlPlaneEvent = { target, event: {type: "TEXT", data }}
     const token = this.jwt.generateToken({ audience: 'ControlEvent', expiresIn: '1m' })
-    const response = await fetch(this.callbackUrl, {
+    const response = await fetch(this.controlApi, {
+      method: 'POST',
       body: JSON.stringify([event]),
       headers: {
         Authorization: `Bearer ${token}`,
@@ -51,7 +52,9 @@ class WSPublisher {
       }
     })
     if (!response.ok) {
-      console.error(await response.text())
+      const text = await response.text()
+      const { status, statusText } = response
+      console.error({ target, data, token, status, statusText, text, body: JSON.stringify([event]), controlApi: this.controlApi })
       throw new Error(response.statusText)
     }
   }
@@ -105,14 +108,14 @@ class WSConnection {
     if (this.closed) {
       events.push({ type: 'DISCONNECT' })
     }
-
+    console.log({outEvents: events})
     return new Response(JSON.stringify(events), {
       status: 200
     })
   }
 }
 
-const wsPublisher = new WSPublisher({ callbackUrl, jwt })
+const wsPublisher = new WSPublisher({ controlApi, jwt })
 
 export async function POST(request: NextRequest) {
   const context = await wsPublisher.parseRequest(request)
@@ -135,6 +138,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (event.type === 'TEXT') {
+      console.log({ received: event })
       await wsPublisher.publish('idk', 'I love data')
       continue
     }

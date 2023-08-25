@@ -1,7 +1,8 @@
 {
-  "telley-live2-ws-production": {
-    "websocketUrl": "wss://ws-2.telley.live/",
-    "callbackUrl": "https://4aoozm3r1e.execute-api.us-west-2.amazonaws.com/$default",
-    "region": "us-west-2"
+  "acidburn-video-production": {
+    "controlApi": "https://rin2ud2w9j.execute-api.us-west-2.amazonaws.com/",
+    "websocketUrl": "wss://ws.acidburn.video/",
+    "region": "us-west-2",
+    "targetUrl": "https://c2f2-173-52-237-15.ngrok-free.app/api/ws"
   }
 }

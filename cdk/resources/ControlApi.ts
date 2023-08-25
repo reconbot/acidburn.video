@@ -35,14 +35,14 @@ export class ControlApi extends Construct {
       },
       logRetention: RetentionDays.THREE_MONTHS,
     })
-
     webSocket.stage.grantManagementApiAccess(eventHandler)
+    connectionsTable.grantReadWriteData(eventHandler)
 
     const api = new HttpApi(this, 'controlApi', {
       apiName: `${Aws.STACK_NAME}-controlApi`,
       defaultIntegration: new HttpLambdaIntegration('DefaultIntegration', eventHandler),
     })
-    this.url = api.url!
+    this.url = api.defaultStage?.url!
   }
 }
 

@@ -77,13 +77,13 @@ export class DDBClient<T extends Connection = Connection> {
     )
   }
 
-  itrConnectionsByChannelId(channelId: string) {
+  itrConnectionsByChannel(channel: string) {
     return this.query({
       TableName: this.ddbTable,
       IndexName: 'byChannel',
       KeyConditions: {
-        channelId: {
-          AttributeValueList: [channelId],
+        channel: {
+          AttributeValueList: [channel],
           ComparisonOperator: 'EQ',
         },
       }

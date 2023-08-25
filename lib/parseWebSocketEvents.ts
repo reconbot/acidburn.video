@@ -1,4 +1,5 @@
 import { FromBackend, FromWebSocketServer } from "./types";
+import { assertUnreachable } from "./utils";
 
 
 export function parseWebSocketEvents(body: string | undefined): FromWebSocketServer[] | null {
@@ -18,22 +19,24 @@ export function parseWebSocketEvents(body: string | undefined): FromWebSocketSer
     return null;
   }
 
-  for (const event of data as FromBackend[]) {
-    if (event.type === 'TEXT' && typeof event.data === 'string') {
-      continue;
+  for (const event of data as FromWebSocketServer[]) {
+    if (event.type === 'OPEN') {
+      if (typeof event.headers !== 'object') {
+        return null
+      }
+      continue
     }
-    if (event.type === 'DISCONNECT') {
-      continue;
+    if (event.type === 'TEXT') {
+      if (typeof event.data !== 'string') {
+        return null
+      }
+      continue
     }
-    if (event.type === 'SUBSCRIBE' && event.target) {
-      continue;
-    }
-    if (event.type === 'UNSUBSCRIBE' && event.target) {
-      continue;
+    if (event.type === 'CLOSE') {
+      continue
     }
     console.log('unknown event', event)
     return null;
   }
-  console.log({data})
   return data as FromWebSocketServer[];
 }

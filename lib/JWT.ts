@@ -76,13 +76,11 @@ export class JWT {
     if (!token) {
       return false
     }
-    if (token === 'cG9zdG1hbjpwYXNzd29yZA==') {
-      return true //francis testing TODO
-    }
     try {
       this.verifyToken(token, audience)
       return true
     } catch (error) {
+      console.error('Error validating token')
       return false
     }
   }

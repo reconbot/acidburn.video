@@ -9,8 +9,8 @@
     "watch": "tsc -w",
     "test": "jest",
     "cdk": "cdk",
-    "deploy:production": "cdk deploy '*production' --outputs-file ./cdk-outputs.json",
-    "deploy:staging": "cdk deploy '*staging' --outputs-file ./cdk-outputs.json"
+    "deploy:production": "JWT_SECRET=asdf TARGET_URL='https://c2f2-173-52-237-15.ngrok-free.app/api/ws' cdk deploy '*production' --outputs-file ./cdk-outputs.json",
+    "deploy:staging": "JWT_SECRET=asdf TARGET_URL='https://c2f2-173-52-237-15.ngrok-free.app/api/ws' cdk deploy '*staging' --outputs-file ./cdk-outputs.json"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.119",
