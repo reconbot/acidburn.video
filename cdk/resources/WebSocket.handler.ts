@@ -1,7 +1,7 @@
 import { APIGatewayProxyWebsocketEventV2, APIGatewayProxyWebsocketHandlerV2 } from "aws-lambda"
 import { JWT } from "../../lib/JWT"
 import { ControlPlaneBackendEvents, FromWebSocketServer } from "../../lib/types"
-import { parseBackendEvents, parseControlPlaneCommands, processCommand } from "./commands"
+import { parseBackendEvents, processCommand } from "./commands"
 import { WebSocketClient } from "./WebSocketClient"
 import { assertUnreachable } from "../../lib/utils"
 import { DDBClient } from "./DDBClient"
@@ -92,6 +92,9 @@ export const handler: APIGatewayProxyWebsocketHandlerV2 = async (event) => {
     const accept = events.shift()
     if (accept?.type !== 'ACCEPT') {
       return { statusCode: 400 }
+    }
+    if (events.find(event => event.type === 'DISCONNECT')) {
+      return { statusCode: 406 }
     }
   }
 

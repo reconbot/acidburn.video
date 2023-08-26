@@ -1,30 +1,38 @@
 # Websocket Lambda Channel Server
 
-This CDK project creates a websocket server that allows clients to join channels and publish messages while they're in the channel.
+This CDK project creates a websocket server similar to PUSHPIN and the GRIP protocol. It will make HTTP requests to your backend app in response to events (connection, disconnection and text frames). It manages a pub sub infrastructure so you can publish events to all connected websockets, and it has a client library for communication.
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+## HTTP API
 
-## API
+The CDK stack will looks for an `TARGET_URL` env var and make post requests to this url. The requests will have the following events from from connected websockets;
 
-The websocket API has the following api (ts types)
+- OpenEvent (with connection headers)
+- CloseEvent
+- TextEvent (with text data)
 
-### Incoming Messages (from clients)
+Clients can send the following events;
 
-- `{ type: "join", channelId: string }` - joins their connection to a channel, you should wait for a `joinSuccess` message before sending `publish` messages
-- `{ type: "publish", data: any }` - publishes a data to the joined channel, if you're not part of a channel you'll get a `publishFailure` event, the data will show up as "messages" to other connections in a channel
-- `{ type: "ping", data?: any }` - test a connection by sending some data that will be returned on a `pong`
+- AcceptEvent (necessary response to an OpenEvent)
+- DisconnectEvent (Closes an open connection, prevents an Opening connection from opening)
+- TextEvent (Send a text event to a channel)
+- SubscribeEvent (subscribe a connection to a channel)
+- UnsubscribeEvent (unsubscribe a connection from a channel)
 
-### Outgoing Messages (from the server)
+## Client Library
 
-- `{ type: "message", senderId: string, data: any }` - sent to everyone in a channel in response to a `publish` event. the `senderId` is a random string generated per "join" and can be used to identify senders, if someone reconnects or rejoins they will have a new `senderId`.
-- `{ type: "pong", data?: any }` - sent to a connection in response to a `ping`
-- `{ type: "joinSuccess" }` - sent when you are joined to a channel, after this message you are safe to send messages
-- `{ type: "joinFailure" }` - sent when you try to join an invalid channel
-- `{ type: "publishFailure", data: string }` - sent when you try to `publish` without joining a channel
-- `{ type: "publishSuccess" }` - sent after your `publish` has been sent to all connections in a channel
+The client library will take a `Request` object and help you craft a `Response` object. It will also make requests to the Control API for publishing messages and disconnecting connections.
 
+## Behaviors and Limitations
 
-Due to API gateway limitations connections we can't send protocol level ping events to clients. Timeouts of idle connections are 10, maximum lifetime of a connection is 2 hours. You can use the ping/pong events as a heartbeat to keep connections alive if you desire.
+- Due to API gateway limitations connections we can't send protocol level ping frames to clients. However it will respond to a ping frame with a pong.
+- Timeouts of idle connections are 10, maximum lifetime of a connection is 2 hours. You can use the ping/pong events as a heartbeat to keep connections alive if you desire.
+- Only text frames are supported
+- Subprotocol headers are on the open event
+- You cannot send data during the open event (API Gateway limitation we could work around it if needed)
+- You cannot send data to a connection directly (copied behavior from pushpin, needs to be evaluated)
+- You can only send a disconnect to a channel (copied behavior from pushpin, needs to be evaluated)
+- Channel membership limits are based on the lambda timeout and there is no durability around sending messages or disconnections. There is no enforcement of limits and it needs to be managed by your backend. This should be improved.
+- Close events don't support a code due to limitations of api gateway
 
 ## Database
 
@@ -40,27 +48,6 @@ It also has a GSI for fetching connections in a channel
 ## Todo
 
 - maybe send heartbeats from the server with step functions
-
-### HTTP Integration
-I want to see if we can use api gateway http integration to send events to an http server direclty. Right now I have a velocity template that works for connections but not for anything else (haven't tried yet). The connection fails however even if it posts the correct info. Additionally there is no CDK support at l2, so I need to figure out how to make it in l1 constructs.
-
-```json
-// Template Selection Expression \$default
-// Template Key $default
-{
-  "connectionId": "$context.connectionId",
-  "domain": "$context.domainName",
-  "eventType": "CONNECT"
-}
-```
-
-Docs
-- https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-integration-responses.html
-- https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-route-keys-connect-disconnect.html
-- https://stackoverflow.com/questions/54001752/aws-websocket-api-gateway-template-selection-expressions-examples
-
-#### Connection template
-
 
 ## Useful commands
 

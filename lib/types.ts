@@ -22,6 +22,11 @@ interface TextEvent {
   data: string
 }
 
+interface Broadcast {
+  type: 'TEXT'
+  data: string
+}
+
 interface DisconnectEvent {
   type: 'DISCONNECT'
 }
