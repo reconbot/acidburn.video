@@ -1,7 +1,6 @@
-import { JWT } from "@/lib/JWT"
+import { assertUnreachable } from "@/lib/assertUnreachable"
 import { NextRequest } from "next/server"
-import { assertUnreachable } from "@/lib/utils"
-import { WSPublisher } from "../../../lib/WSPublisher"
+import { JWT, SlipSocketPublisher } from "slip-sockets"
 
 const JWT_SECRET = process.env.JWT_SECRET
 if (!JWT_SECRET) {
@@ -12,7 +11,7 @@ const { 'acidburn-video-production': { controlApi } } = require('../../../cdk/cd
 
 const jwt = new JWT({ jwtSecret: JWT_SECRET })
 
-const wsPublisher = new WSPublisher({ controlApi, jwt })
+const wsPublisher = new SlipSocketPublisher({ controlApi, jwt })
 
 export async function POST(request: NextRequest) {
   const connection = await wsPublisher.parseRequest(request)

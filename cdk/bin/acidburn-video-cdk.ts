@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
-import { WebsocketCallback } from '../stacks/websocket-callback-stack';
+import { SlipSocketStack } from '@slip-sockets/stack'
 
 const { TARGET_URL, JWT_SECRET } = process.env
 
@@ -14,7 +14,7 @@ if (!JWT_SECRET) {
 }
 
 const app = new cdk.App();
-new WebsocketCallback(app, 'acidburn-video-production', {
+new SlipSocketStack(app, 'acidburn-video-production', {
   domain: 'ws.acidburn.video',
   targetUrl: TARGET_URL,
   jwtSecret: JWT_SECRET,
@@ -24,7 +24,7 @@ new WebsocketCallback(app, 'acidburn-video-production', {
   env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
 });
 
-new WebsocketCallback(app, 'acidburn-video-staging', {
+new SlipSocketStack(app, 'acidburn-video-staging', {
   domain: 'ws-staging.acidburn.video',
   targetUrl: TARGET_URL,
   jwtSecret: JWT_SECRET,

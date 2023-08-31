@@ -12,27 +12,23 @@
     "deploy:production": "JWT_SECRET=asdf TARGET_URL='https://c2f2-173-52-237-15.ngrok-free.app/api/ws' cdk deploy '*production' --outputs-file ./cdk-outputs.json",
     "deploy:staging": "JWT_SECRET=asdf TARGET_URL='https://c2f2-173-52-237-15.ngrok-free.app/api/ws' cdk deploy '*staging' --outputs-file ./cdk-outputs.json"
   },
+  "author": {
+    "name": "Francis Gulotta",
+    "email": "wizard@roborooter.com"
+  },
   "devDependencies": {
-    "@types/aws-lambda": "^8.10.119",
-    "@types/jest": "^29.5.3",
-    "@types/node": "^20.5.0",
-    "aws-cdk": "2.91.0",
-    "aws-lambda": "^1.0.7",
-    "jest": "^29.6.2",
-    "ts-jest": "^29.1.1",
+    "@aws-cdk/aws-apigatewayv2-alpha": "2.93.0-alpha.0",
+    "@aws-cdk/aws-apigatewayv2-integrations-alpha": "2.93.0-alpha.0",
+    "@slip-sockets/stack": "^3.0.2",
+    "@types/node": "^20.5.7",
+    "@types/source-map-support": "^0.5.7",
+    "aws-cdk": "2.93.0",
+    "aws-cdk-lib": "2.93.0",
+    "constructs": "10.2.70",
+    "esbuild": "^0.19.2",
+    "source-map-support": "^0.5.21",
     "ts-node": "^10.9.1",
     "typescript": "~5.1.6",
-    "wscat": "^5.2.0",
-    "@aws-cdk/aws-apigatewayv2-alpha": "2.91.0-alpha.0",
-    "@aws-cdk/aws-apigatewayv2-integrations-alpha": "2.91.0-alpha.0",
-    "@aws-sdk/client-apigatewaymanagementapi": "^3.388.0",
-    "@aws-sdk/client-dynamodb": "^3.388.0",
-    "@aws-sdk/lib-dynamodb": "^3.388.0",
-    "aws-cdk-lib": "2.91.0",
-    "constructs": "10.2.69",
-    "esbuild": "^0.19.2",
-    "nanoid": "^4.0.2",
-    "source-map-support": "^0.5.21",
-    "streaming-iterables": "8.0.0"
+    "wscat": "^5.2.0"
   }
 }
